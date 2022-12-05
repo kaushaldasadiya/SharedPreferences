@@ -1,0 +1,107 @@
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+void main() {
+  runApp(const MyScreen());
+}
+
+class MyScreen extends StatefulWidget {
+  const MyScreen({Key? key}) : super(key: key);
+
+  @override
+  State<MyScreen> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyScreen> {
+  String myText = "";
+
+  TextEditingController txt1 = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'flutter Demo',
+      home: Scaffold(
+          appBar: AppBar(
+            backgroundColor: Colors.purpleAccent,
+            title: const Text('Flutter Demo'),
+          ),
+          body: Center(
+            child: Column(
+              children: [
+                const Text(
+                  ':Shared Preferences Demo:',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 25,
+                      backgroundColor: Colors.deepPurpleAccent),
+                ),
+                SizedBox(
+                  height: 150,
+                ),
+                Container(
+                  child: TextField(controller: txt1),
+                ),
+                ElevatedButton(
+                    style: TextButton.styleFrom(
+                        backgroundColor: Colors.deepPurple),
+                    onPressed: () {
+                      _SaveData();
+                    },
+                    child: const Text('Save')),
+                SizedBox(
+                  height: 20,
+                ),
+                ElevatedButton(
+                    style: TextButton.styleFrom(
+                        backgroundColor: Colors.deepPurple),
+                    onPressed: () {
+                      _GetData();
+                    },
+                    child: const Text('Get')),
+                SizedBox(
+                  height: 20,
+                ),
+                ElevatedButton(
+                    style: TextButton.styleFrom(
+                        backgroundColor: Colors.deepPurple),
+                    onPressed: () {
+                      _RemoveData();
+                    },
+                    child: const Text('Remove')),
+                SizedBox(
+                  height: 20,
+                ),
+                Text(myText, style: const TextStyle(fontSize: 25)),
+              ],
+            ),
+          )),
+    );
+  }
+
+  void _SaveData() async {
+    var prefs = await SharedPreferences.getInstance();
+    var a1 = int.parse(txt1.text);
+    await prefs.setInt('a1', a1);
+    setState(() {
+      myText = "Saved";
+    });
+  }
+
+  void _GetData() async {
+    var prefs = await SharedPreferences.getInstance();
+    final int? a1 = prefs.getInt('a1');
+
+    setState(() {
+      myText = "Get Data : $a1";
+    });
+  }
+
+  void _RemoveData() async {
+    var prefs = await SharedPreferences.getInstance();
+    await prefs.remove('a1');
+    setState(() {
+      myText = " Removed";
+    });
+  }
+}
