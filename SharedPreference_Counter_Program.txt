@@ -1,0 +1,95 @@
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+// ignore: use_key_in_widget_constructors
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        primarySwatch: Colors.red,
+      ),
+      home: const MyScreen(title: 'Flutter Demo Home Page'),
+    );
+  }
+}
+
+class MyScreen extends StatefulWidget {
+  const MyScreen({Key? key, required this.title}) : super(key: key);
+  final String title;
+  @override
+  State<MyScreen> createState() => _MyScreenState();
+}
+
+class _MyScreenState extends State<MyScreen> {
+  int _counter = 0;
+  SharedPreferences? _prefs;
+  static String Numberpref = "Number preference";
+  int _numberpref = 0;
+
+  void _Counter() {
+    setState(() {
+      _counter++;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.title),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            const Text(
+              'You Have pushed the Button this many times:',
+            ),
+            Text(
+              '${this._numberpref}',
+              style: Theme.of(context).textTheme.headline4,
+            ),
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: ((() => this._setNumberPref(this._numberpref + 1))),
+        tooltip: 'Increment',
+        child: const Icon(Icons.add),
+      ),
+    );
+  }
+
+  void loadCounter() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _counter = (prefs.getInt('Counter') ?? 0);
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    SharedPreferences.getInstance().then((prefs) {
+      setState(() => this._prefs = prefs);
+      _loadNumberpref();
+    });
+  }
+
+  _loadNumberpref() {
+    setState(() {
+      this._numberpref = this._prefs?.getInt(Numberpref) ?? 0;
+    });
+  }
+
+  Future<void> _setNumberPref(int val) async {
+    await this._prefs?.setInt(Numberpref, val);
+    _loadNumberpref();
+  }
+}
